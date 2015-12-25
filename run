@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+import os
+
+import yaml
+import boto3
+from mailer import Mailer, Message
+
+class EC2Watch(object):
+
+    def __init__(self):
+
+        HERE =  os.path.abspath(os.path.dirname(__file__))
+        config_path = os.path.join(HERE, 'config.yml')
+
+        with open(config_path, 'r') as fd:
+            self.config = yaml.load(fd)
+
+    def run(self):
+
+        client = boto3.client('ec2')
+        response = client.describe_instances(
+            Filters=[
+                {
+                    'Name': 'instance-state-name',
+                    'Values': [
+                        'running',
+                    ]
+                },
+            ]
+        )
+        nb_of_instance = len(response['Reservations'])
+
+        if nb_of_instance != self.config.get('expected_number_of_instance'):
+            self.notify(nb_of_instance)
+
+    def notify(self, nb_of_instance):
+        message_text = "The number of instance running (%d) is different from the expected number of instance (%d)"%(
+            nb_of_instance,
+            self.config.get('expected_number_of_instance')
+        )
+
+        message = Message(
+                    From = self.config.get('mailer_from'),
+                    To = self.config.get('mailer_to'),
+                    charset = "utf-8"
+        )
+
+        message.Subject = self.config.get('mailer_subject')
+        message.Html = message_text
+        message.Body = message_text
+
+        sender = Mailer(self.config.get('mailer_smtp_server'))
+        sender.send(message)
+
+if __name__ == "__main__":
+    EC2Watch().run()

@@ -1,8 +1,0 @@
-f:
-  browserName: 'Firefox'
-
-c:
-  browserName: 'Chrome'
-
-p:
-  browserName: 'PhantomJS'

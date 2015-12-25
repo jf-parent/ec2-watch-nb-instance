@@ -1,2 +1,3 @@
 mailer
-brome
+boto3
+pyyaml

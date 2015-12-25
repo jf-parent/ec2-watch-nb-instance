@@ -4,13 +4,18 @@ INSTALLATION
     ::
 
     $ sudo pip install -r requirements.txt
-    $ cp config/browsers_config.yml.example config/browsers_config.yml
-    $ cp config/brome.yml.example config/brome.yml
-    $ vim config/brome.yml -c ":/#CHANGEME"
+    $ cp config.yml.example config.yml
+    $ vim config.yml -c ":/#CHANGEME"
+    $ chmod +x run
+
+CONFIGURATION
+#############
+
+https://boto3.readthedocs.org/en/latest/guide/quickstart.html#configuration
 
 USAGE
 #####
 
     ::
 
-    $ ./bot run -l f -s "check_nb_instance"
+    $ run

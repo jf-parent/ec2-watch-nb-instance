@@ -1,0 +1,6 @@
+mailer_from: "" #CHANGEME
+mailer_to: "" #CHANGEME
+mailer_smtp_server: '' #CHANGEME
+mailer_subject: "EC2 Watch instance"
+expected_number_of_instance: 0 #CHANGEME
+logger_format: ''
