@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import subprocess
 
 import yaml
 import boto3
@@ -18,7 +19,11 @@ class EC2Watch(object):
 
     def run(self):
 
-        client = boto3.client('ec2')
+        client = boto3.client(
+            'ec2',
+            aws_access_key_id = self.config.get('aws_access_key_id'),
+            aws_secret_access_key = self.config.get('aws_secret_access_key')
+        )
         response = client.describe_instances(
             Filters=[
                 {
@@ -40,18 +45,38 @@ class EC2Watch(object):
             self.config.get('expected_number_of_instance')
         )
 
-        message = Message(
-                    From = self.config.get('mailer_from'),
-                    To = self.config.get('mailer_to'),
-                    charset = "utf-8"
-        )
+        if self.config.get('notification_type') == 'mailer':
 
-        message.Subject = self.config.get('mailer_subject')
-        message.Html = message_text
-        message.Body = message_text
+            message = Message(
+                        From = self.config.get('mailer_from'),
+                        To = self.config.get('mailer_to'),
+                        charset = "utf-8"
+            )
 
-        sender = Mailer(self.config.get('mailer_smtp_server'))
-        sender.send(message)
+            message.Subject = self.config.get('mailer_subject')
+            message.Html = message_text
+            message.Body = message_text
 
+            sender = Mailer(self.config.get('mailer_smtp_server'), use_ssl = True)
+            sender.login(self.config.get('mailer_from'), self.config.get('mailer_smtp_server_password'))
+            sender.send(message)
+
+        elif self.config.get('notification_type') == 'terminal-notifier':
+            group_id = "'ec2-watch-nb-instance'"
+            command = [
+                "/usr/local/bin/terminal-notifier",
+                "-message",
+                "'%s'"%message_text,
+                "-sound",
+                "'default'",
+                "-title",
+                group_id,
+                "-group",
+                group_id,
+                "-remove",
+                group_id
+            ]
+            subprocess.call(" ".join(command), shell = True)
+            
 if __name__ == "__main__":
     EC2Watch().run()

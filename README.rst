@@ -13,6 +13,8 @@ CONFIGURATION
 
 https://boto3.readthedocs.org/en/latest/guide/quickstart.html#configuration
 
+terminal-notifier: https://github.com/julienXX/terminal-notifier
+
 USAGE
 #####
 
