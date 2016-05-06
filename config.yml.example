@@ -4,5 +4,3 @@ mailer_smtp_server: '' #CHANGEME
 mailer_subject: "EC2 Watch instance"
 expected_number_of_instance: 0 #CHANGEME
 logger_format: ''
-aws_secret_access_key: ''
-aws_access_key_id: ''
